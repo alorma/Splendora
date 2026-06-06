@@ -7,9 +7,7 @@ plugins {
 
 android {
   namespace = "com.alorma.splndora"
-  compileSdk {
-    version = release(37)
-  }
+  compileSdk = 37
 
   defaultConfig {
     applicationId = "com.alorma.splndora"
@@ -69,6 +67,9 @@ dependencies {
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.koin.android)
+  implementation(libs.koin.androidx.compose)
+  implementation(libs.koin.compose.viewmodel)
   implementation(libs.logging.interceptor)
   implementation(libs.material)
   implementation(libs.moshi.kotlin)

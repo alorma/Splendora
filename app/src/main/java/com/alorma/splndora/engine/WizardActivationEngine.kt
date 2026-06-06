@@ -1,19 +1,19 @@
 package com.alorma.splndora.engine
 
+import com.alorma.splndora.clock.SplendoraClock
 import com.alorma.splndora.data.Character
 import java.time.LocalDate
 import java.time.Period
 
-class WizardActivationEngine {
+class WizardActivationEngine(private val clock: SplendoraClock) {
     companion object {
-        val REFERENCE_DATE: LocalDate = LocalDate.of(1729, 12, 31)
         const val ACTIVATION_AGE = 13
     }
 
     /**
-     * Calculates the age of a character relative to the reference date (end of 1729).
+     * Calculates the age of a character relative to the current date from the clock.
      */
-    fun calculateAge(birthDate: LocalDate, referenceDate: LocalDate = REFERENCE_DATE): Int {
+    fun calculateAge(birthDate: LocalDate, referenceDate: LocalDate = clock.currentDate()): Int {
         if (birthDate.isAfter(referenceDate)) return -1
         return Period.between(birthDate, referenceDate).years
     }
@@ -23,7 +23,7 @@ class WizardActivationEngine {
      * Standard: 13 years old or more.
      * Exception: Logic override (e.g., activates at 10 years old).
      */
-    fun isActivated(character: Character, referenceDate: LocalDate = REFERENCE_DATE): Boolean {
+    fun isActivated(character: Character, referenceDate: LocalDate = clock.currentDate()): Boolean {
         val age = calculateAge(character.birthDate, referenceDate)
         if (age < 0) return false
 
