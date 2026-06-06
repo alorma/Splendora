@@ -212,7 +212,7 @@ fun HistoricalDatePickerDialog(
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = initialDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-        yearRange = 1700..1799
+        yearRange = 1650..1800
     )
 
     DatePickerDialog(
