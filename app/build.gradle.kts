@@ -8,15 +8,13 @@ plugins {
 android {
   namespace = "com.alorma.splndora"
   compileSdk {
-    version = release(36) {
-      minorApiLevel = 1
-    }
+    version = release(37)
   }
 
   defaultConfig {
     applicationId = "com.alorma.splndora"
-    minSdk = 36
-    targetSdk = 36
+    minSdk = 37
+    targetSdk = 37
     versionCode = 1
     versionName = "1.0"
 
