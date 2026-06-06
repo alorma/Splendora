@@ -51,13 +51,13 @@ fun EdadesAdaptiveScreen(
             if (isAddingNew || selectedCharacter != null) {
                 CharacterDetailScreen(
                     character = detailCharacter,
-                    onSave = { name, birthDate, isException, activationAge ->
+                    onSave = { name, birthDate, isException, activationDate ->
                         viewModel.saveCharacter(
                             id = detailCharacter?.id ?: 0,
                             name = name,
                             birthDate = birthDate,
                             isException = isException,
-                            activationAge = activationAge
+                            activationDate = activationDate
                         )
                         scope.launch {
                             if (navigator.canNavigateBack()) {

@@ -10,28 +10,30 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.splndora.data.Character
+import com.alorma.splndora.ui.theme.SplendoraTheme
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import androidx.compose.ui.tooling.preview.Preview
-import com.alorma.splndora.ui.theme.SplendoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CharacterDetailScreen(
     character: Character?,
-    onSave: (String, LocalDate, Boolean, Int) -> Unit,
+    onSave: (String, LocalDate, Boolean, LocalDate?) -> Unit,
     onDelete: (Character) -> Unit,
     onBack: () -> Unit
 ) {
     var name by remember(character) { mutableStateOf(character?.name ?: "") }
     var birthDate by remember(character) { mutableStateOf(character?.birthDate ?: LocalDate.of(1700, 1, 1)) }
     var isException by remember(character) { mutableStateOf(character?.isException ?: false) }
-    var activationAge by remember(character) { mutableStateOf(character?.activationAge?.toString() ?: "13") }
-    var showDatePicker by remember { mutableStateOf(false) }
+    var activationDate by remember(character) { mutableStateOf(character?.activationDate ?: birthDate.plusYears(13)) }
+    
+    var showBirthDatePicker by remember { mutableStateOf(false) }
+    var showActivationDatePicker by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -67,27 +69,12 @@ fun CharacterDetailScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedCard(
-                onClick = { showDatePicker = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Birth Date", style = MaterialTheme.typography.labelMedium)
-                        Text(
-                            text = birthDate.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                    Text("Change", color = MaterialTheme.colorScheme.primary)
-                }
-            }
+            // Birth Date Picker
+            DatePickerField(
+                label = "Birth Date",
+                date = birthDate,
+                onClick = { showBirthDatePicker = true }
+            )
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -97,7 +84,7 @@ fun CharacterDetailScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Exception Character", style = MaterialTheme.typography.bodyLarge)
                     Text(
-                        "Uses custom activation logic (e.g. 10 years)",
+                        "Uses a specific activation date",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -109,47 +96,97 @@ fun CharacterDetailScreen(
             }
 
             if (isException) {
-                OutlinedTextField(
-                    value = activationAge,
-                    onValueChange = { newValue ->
-                        if (newValue.all { it.isDigit() }) {
-                            activationAge = newValue
-                        }
-                    },
-                    label = { Text("Activation Age") },
-                    modifier = Modifier.fillMaxWidth(),
-                    supportingText = {
-                        if (activationAge.toIntOrNull() == null || activationAge.toInt() <= 0) {
-                            Text("Must be a positive number", color = MaterialTheme.colorScheme.error)
-                        }
-                    },
-                    isError = activationAge.toIntOrNull() == null || activationAge.toInt() <= 0
+                // Activation Date Picker for Exceptions
+                DatePickerField(
+                    label = "Activation Date",
+                    date = activationDate,
+                    onClick = { showActivationDatePicker = true },
+                    isError = !activationDate.isAfter(birthDate),
+                    supportingText = if (!activationDate.isAfter(birthDate)) "Must be after birth date" else null
                 )
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            val isValidActivationAge = activationAge.toIntOrNull()?.let { it > 0 } ?: false
+            val isActivationDateValid = !isException || activationDate.isAfter(birthDate)
 
             Button(
-                onClick = { onSave(name, birthDate, isException, activationAge.toIntOrNull() ?: 13) },
+                onClick = { 
+                    onSave(name, birthDate, isException, if (isException) activationDate else null) 
+                },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = name.isNotBlank() && (!isException || isValidActivationAge)
+                enabled = name.isNotBlank() && isActivationDateValid
             ) {
                 Text("Save Character")
             }
         }
     }
 
-    if (showDatePicker) {
+    if (showBirthDatePicker) {
         HistoricalDatePickerDialog(
             initialDate = birthDate,
             onDateSelected = {
                 birthDate = it
-                showDatePicker = false
+                // If activation date is before birth date, reset it to birth date + 13 years
+                if (isException && !activationDate.isAfter(it)) {
+                    activationDate = it.plusYears(13)
+                }
+                showBirthDatePicker = false
             },
-            onDismiss = { showDatePicker = false }
+            onDismiss = { showBirthDatePicker = false }
         )
+    }
+
+    if (showActivationDatePicker) {
+        HistoricalDatePickerDialog(
+            initialDate = activationDate,
+            onDateSelected = {
+                activationDate = it
+                showActivationDatePicker = false
+            },
+            onDismiss = { showActivationDatePicker = false }
+        )
+    }
+}
+
+@Composable
+fun DatePickerField(
+    label: String,
+    date: LocalDate,
+    onClick: () -> Unit,
+    isError: Boolean = false,
+    supportingText: String? = null
+) {
+    OutlinedCard(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = if (isError) CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)) else CardDefaults.outlinedCardColors(),
+        border = if (isError) CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.error)) else CardDefaults.outlinedCardBorder()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(label, style = MaterialTheme.typography.labelMedium, color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        text = date.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+                Text("Change", color = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
+            }
+            if (supportingText != null) {
+                Text(
+                    text = supportingText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(top = 4.dp)
+                )
+            }
+        }
     }
 }
 

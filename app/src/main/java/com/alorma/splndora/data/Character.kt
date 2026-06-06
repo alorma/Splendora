@@ -10,5 +10,5 @@ data class Character(
     val name: String,
     val birthDate: LocalDate,
     val isException: Boolean = false,
-    val activationAge: Int = 13
+    val activationDate: LocalDate? = null
 )

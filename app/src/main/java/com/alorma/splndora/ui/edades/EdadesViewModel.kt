@@ -56,7 +56,7 @@ class EdadesViewModel(
         name: String,
         birthDate: LocalDate,
         isException: Boolean,
-        activationAge: Int = 13
+        activationDate: LocalDate? = null
     ) {
         viewModelScope.launch {
             val character = Character(
@@ -64,7 +64,7 @@ class EdadesViewModel(
                 name = name,
                 birthDate = birthDate,
                 isException = isException,
-                activationAge = activationAge
+                activationDate = activationDate
             )
             if (id == 0) {
                 characterDao.insertCharacter(character)

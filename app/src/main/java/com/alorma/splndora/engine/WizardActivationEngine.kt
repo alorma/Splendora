@@ -24,14 +24,13 @@ class WizardActivationEngine(private val clock: SplendoraClock) {
      * Defaults to the clock's current date.
      */
     fun isActivated(character: Character, referenceDate: LocalDate = clock.currentDate.value): Boolean {
-        val age = calculateAge(character.birthDate, referenceDate)
-        if (age < 0) return false
+        if (character.birthDate.isAfter(referenceDate)) return false
 
-        val requiredAge = if (character.isException) {
-            character.activationAge
+        return if (character.isException) {
+            character.activationDate?.let { !referenceDate.isBefore(it) } ?: false
         } else {
-            ACTIVATION_AGE
+            val age = calculateAge(character.birthDate, referenceDate)
+            age >= ACTIVATION_AGE
         }
-        return age >= requiredAge
     }
 }
