@@ -23,13 +23,14 @@ import com.alorma.splndora.ui.theme.SplendoraTheme
 @Composable
 fun CharacterDetailScreen(
     character: Character?,
-    onSave: (String, LocalDate, Boolean) -> Unit,
+    onSave: (String, LocalDate, Boolean, Int) -> Unit,
     onDelete: (Character) -> Unit,
     onBack: () -> Unit
 ) {
     var name by remember(character) { mutableStateOf(character?.name ?: "") }
     var birthDate by remember(character) { mutableStateOf(character?.birthDate ?: LocalDate.of(1700, 1, 1)) }
     var isException by remember(character) { mutableStateOf(character?.isException ?: false) }
+    var activationAge by remember(character) { mutableStateOf(character?.activationAge?.toString() ?: "13") }
     var showDatePicker by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -107,12 +108,33 @@ fun CharacterDetailScreen(
                 )
             }
 
+            if (isException) {
+                OutlinedTextField(
+                    value = activationAge,
+                    onValueChange = { newValue ->
+                        if (newValue.all { it.isDigit() }) {
+                            activationAge = newValue
+                        }
+                    },
+                    label = { Text("Activation Age") },
+                    modifier = Modifier.fillMaxWidth(),
+                    supportingText = {
+                        if (activationAge.toIntOrNull() == null || activationAge.toInt() <= 0) {
+                            Text("Must be a positive number", color = MaterialTheme.colorScheme.error)
+                        }
+                    },
+                    isError = activationAge.toIntOrNull() == null || activationAge.toInt() <= 0
+                )
+            }
+
             Spacer(modifier = Modifier.weight(1f))
 
+            val isValidActivationAge = activationAge.toIntOrNull()?.let { it > 0 } ?: false
+
             Button(
-                onClick = { onSave(name, birthDate, isException) },
+                onClick = { onSave(name, birthDate, isException, activationAge.toIntOrNull() ?: 13) },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = name.isNotBlank()
+                enabled = name.isNotBlank() && (!isException || isValidActivationAge)
             ) {
                 Text("Save Character")
             }
@@ -137,7 +159,7 @@ fun CharacterDetailPreview() {
     SplendoraTheme {
         CharacterDetailScreen(
             character = Character(name = "Newt", birthDate = LocalDate.of(1705, 3, 15)),
-            onSave = { _, _, _ -> },
+            onSave = { _, _, _, _ -> },
             onDelete = {},
             onBack = {}
         )

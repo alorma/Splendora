@@ -25,53 +25,42 @@ Splêndora is a character management and magical status tracker set in the year 
 - **Kotlin Coroutines**: Handling asynchronous database operations and age calculations.
 
 ## Implementation Steps
-**Total Duration:** 25m 49s
+**Total Duration:** 25m 36s
 
-### Task_1_Foundation: Set up Room database, Koin for dependency injection, and implement the core Wizard Activation Engine using 1729 as the reference year and implementing character-specific logic overrides.
+### Task_1_Foundation: Set up Room database, Koin for dependency injection, and implement the core Wizard Activation Engine using 1729 as the reference year.
 - **Status:** COMPLETED
-- **Updates:** Implemented Room database with Character entity supporting 1700s dates. Set up Koin for dependency injection. Developed the Wizard Activation Engine using 1729 as the reference year, including age calculation and exception character logic (10-year override). Project builds successfully with all dependencies configured.
 - **Acceptance Criteria:**
-  - Koin dependencies added to libs.versions.toml and build.gradle.kts
-  - Room database with Character entity (1700s era) and DAO created
-  - Wizard Activation logic using 1729 reference implemented
-  - Logic override for exception character implemented
-  - Project builds successfully
+  - Room, Koin setup complete
+  - Activation engine implemented
 - **Duration:** 7m 45s
 
 ### Task_2_Edades_CRUD: Implement the 'Edades' section for 18th-century characters with CRUD operations and an adaptive multi-pane layout.
 - **Status:** COMPLETED
-- **Updates:** Implemented 'Edades' section with CRUD operations and an adaptive multi-pane layout using ListDetailPaneScaffold. Integrated Navigation 3 for state-driven navigation. Refactored the Wizard Activation Engine to use an injectable SplendoraClock interface, defaulting to 1729-12-31. Implemented birth date picking restricted to the 1700s. Project builds and navigation between list and details is functional.
 - **Acceptance Criteria:**
-  - Character list and detail screens implemented using Compose Adaptive
-  - CRUD for characters with birth dates in the 1700s working
-  - Adaptive layout (List-Detail) works on different screen sizes
-  - Navigation 3 integrated
+  - CRUD works
+  - Adaptive layout implemented
 - **Duration:** 15m 5s
 
-### Task_3_Temporal_Simulator: Implement the Temporal Status Simulator for historical date verification and the Formulas placeholder screen.
+### Task_3_Integrated_Time_Travel: Implement the integrated historical date picker on the Edades screen and the Formulas placeholder.
 - **Status:** COMPLETED
-- **Updates:** Implemented the Temporal Status Simulator with character selection and historical date verification. Created the Formulas placeholder screen with Material 3 styling. Integrated both into the main navigation using Navigation 3 and a Bottom Navigation bar. Updated the Wizard Activation Engine logic to support arbitrary target dates. Koin and ViewModels configured correctly.
 - **Acceptance Criteria:**
-  - Temporal Status Simulator verifies activation for any historical input date
-  - Formulas screen implemented as a placeholder with Material 3 styling
-  - Wizard activation logic correctly applied relative to 1729 and historical inputs
-- **Duration:** 2m 9s
+  - Date picker in Edades top bar
+  - List updates reactively to date changes
+  - Formulas screen exists
 
-### Task_4_Final_Polish: Refine the UI with a vibrant Material 3 theme, Edge-to-Edge display, and an adaptive app icon.
+### Task_4_Final_Polish: Refine UI with Material 3 theme, Edge-to-Edge, and adaptive app icon.
 - **Status:** COMPLETED
-- **Updates:** Refined the app with a vibrant "Magical & Energetic" Material 3 theme (Deep Purples and Golds). Implemented full Edge-to-Edge display support using enableEdgeToEdge and WindowInsets. Created a custom adaptive app icon with magical motifs. Verified that all screens maintain visual consistency and professional finish.
 - **Acceptance Criteria:**
-  - Vibrant Material 3 color scheme implemented (Light/Dark)
-  - Full Edge-to-Edge display configured
-  - Adaptive app icon matching the magical/historical theme created
+  - Vibrant M3 theme
+  - Edge-to-Edge display
+  - Adaptive icon
 - **Duration:** 50s
 
 ### Task_5_Run_Verify: Final verification of the application's stability, 1729 era logic accuracy, and requirement alignment.
 - **Status:** IN_PROGRESS
 - **Acceptance Criteria:**
   - App builds and runs without crashes
-  - Historical age logic and simulator verified for accuracy
-  - Build passes and all existing tests pass
-  - Application matches the design aesthetic requirements
-- **StartTime:** 2026-06-06 18:07:48 CEST
+  - Historical age logic verified with integrated date picker
+  - Build passes on phone emulator
+- **Duration:** 1m 56s
 

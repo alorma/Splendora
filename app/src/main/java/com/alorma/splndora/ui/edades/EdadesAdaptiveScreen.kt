@@ -17,7 +17,7 @@ fun EdadesAdaptiveScreen(
 ) {
     val navigator = rememberListDetailPaneScaffoldNavigator<Character>()
     val scope = rememberCoroutineScope()
-    val characters by viewModel.characters.collectAsState()
+    val state by viewModel.uiState.collectAsState()
 
     var selectedCharacter by remember { mutableStateOf<Character?>(null) }
     var isAddingNew by remember { mutableStateOf(false) }
@@ -33,7 +33,7 @@ fun EdadesAdaptiveScreen(
         value = navigator.scaffoldValue,
         listPane = {
             CharacterListScreen(
-                characters = characters,
+                state = state,
                 onCharacterClick = { character ->
                     selectedCharacter = character
                     isAddingNew = false
@@ -43,19 +43,21 @@ fun EdadesAdaptiveScreen(
                     isAddingNew = true
                     selectedCharacter = null
                     scope.launch { navigator.navigateTo(ListDetailPaneScaffoldRole.Detail) }
-                }
+                },
+                onUpdateTime = { viewModel.updateCurrentTime(it) }
             )
         },
         detailPane = {
             if (isAddingNew || selectedCharacter != null) {
                 CharacterDetailScreen(
                     character = detailCharacter,
-                    onSave = { name, birthDate, isException ->
+                    onSave = { name, birthDate, isException, activationAge ->
                         viewModel.saveCharacter(
                             id = detailCharacter?.id ?: 0,
                             name = name,
                             birthDate = birthDate,
-                            isException = isException
+                            isException = isException,
+                            activationAge = activationAge
                         )
                         scope.launch {
                             if (navigator.canNavigateBack()) {

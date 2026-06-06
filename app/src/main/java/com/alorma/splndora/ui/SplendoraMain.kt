@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.HistoryEdu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -16,7 +15,6 @@ import androidx.navigation3.runtime.NavKey
 import com.alorma.splndora.ui.edades.EdadesAdaptiveScreen
 import com.alorma.splndora.ui.formulas.FormulasScreen
 import com.alorma.splndora.ui.navigation.NavRoute
-import com.alorma.splndora.ui.simulator.SimulatorScreen
 import com.alorma.splndora.ui.theme.SplendoraTheme
 
 @Composable
@@ -38,17 +36,6 @@ fun SplendoraMain() {
                         },
                         icon = { Icon(Icons.Default.HistoryEdu, contentDescription = null) },
                         label = { Text("Edades") }
-                    )
-                    NavigationBarItem(
-                        selected = currentRoute == NavRoute.Simulator,
-                        onClick = {
-                            if (currentRoute != NavRoute.Simulator) {
-                                backStack.clear()
-                                backStack.add(NavRoute.Simulator)
-                            }
-                        },
-                        icon = { Icon(Icons.Default.CalendarMonth, contentDescription = null) },
-                        label = { Text("Simulator") }
                     )
                     NavigationBarItem(
                         selected = currentRoute == NavRoute.Formulas,
@@ -75,9 +62,6 @@ fun SplendoraMain() {
                         when (key) {
                             is NavRoute.Edades -> NavEntry<NavKey>(key) {
                                 EdadesAdaptiveScreen()
-                            }
-                            is NavRoute.Simulator -> NavEntry<NavKey>(key) {
-                                SimulatorScreen()
                             }
                             is NavRoute.Formulas -> NavEntry<NavKey>(key) {
                                 FormulasScreen()

@@ -6,9 +6,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -16,17 +17,37 @@ import androidx.compose.ui.unit.dp
 import com.alorma.splndora.data.Character
 import com.alorma.splndora.ui.theme.SplendoraTheme
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CharacterListScreen(
-    characters: List<CharacterUiModel>,
+    state: EdadesUiState,
     onCharacterClick: (Character) -> Unit,
-    onAddCharacter: () -> Unit
+    onAddCharacter: () -> Unit,
+    onUpdateTime: (LocalDate) -> Unit
 ) {
+    var showDatePicker by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Edades (1729)") })
+            TopAppBar(
+                title = { 
+                    Column {
+                        Text("Splêndora")
+                        Text(
+                            text = state.currentTime.format(DateTimeFormatter.ofPattern("MMM dd, yyyy")),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(Icons.Default.CalendarMonth, contentDescription = "Change Current Time")
+                    }
+                }
+            )
         },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddCharacter) {
@@ -34,14 +55,14 @@ fun CharacterListScreen(
             }
         }
     ) { padding ->
-        if (characters.isEmpty()) {
+        if (state.characters.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No characters found in 1729.")
+                Text("No characters found in ${state.currentTime.year}.")
             }
         } else {
             LazyColumn(
@@ -51,11 +72,22 @@ fun CharacterListScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(characters) { uiModel ->
+                items(state.characters) { uiModel ->
                     CharacterItem(uiModel, onClick = { onCharacterClick(uiModel.character) })
                 }
             }
         }
+    }
+
+    if (showDatePicker) {
+        HistoricalDatePickerDialog(
+            initialDate = state.currentTime,
+            onDateSelected = {
+                onUpdateTime(it)
+                showDatePicker = false
+            },
+            onDismiss = { showDatePicker = false }
+        )
     }
 }
 
@@ -87,7 +119,7 @@ fun CharacterItem(uiModel: CharacterUiModel, onClick: () -> Unit) {
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Age: ${uiModel.age} years",
+                    text = if (uiModel.age < 0) "Not born yet" else "Age: ${uiModel.age} years",
                     style = MaterialTheme.typography.bodySmall
                 )
                 if (uiModel.isActivated) {
@@ -107,20 +139,24 @@ fun CharacterItem(uiModel: CharacterUiModel, onClick: () -> Unit) {
 fun CharacterListPreview() {
     SplendoraTheme {
         CharacterListScreen(
-            characters = listOf(
-                CharacterUiModel(
-                    character = Character(name = "Albus", birthDate = LocalDate.of(1710, 1, 1)),
-                    age = 19,
-                    isActivated = true
+            state = EdadesUiState(
+                characters = listOf(
+                    CharacterUiModel(
+                        character = Character(name = "Albus", birthDate = LocalDate.of(1710, 1, 1)),
+                        age = 19,
+                        isActivated = true
+                    ),
+                    CharacterUiModel(
+                        character = Character(name = "Scorpius", birthDate = LocalDate.of(1720, 5, 20)),
+                        age = 9,
+                        isActivated = false
+                    )
                 ),
-                CharacterUiModel(
-                    character = Character(name = "Scorpius", birthDate = LocalDate.of(1720, 5, 20)),
-                    age = 9,
-                    isActivated = false
-                )
+                currentTime = LocalDate.of(1729, 12, 31)
             ),
             onCharacterClick = {},
-            onAddCharacter = {}
+            onAddCharacter = {},
+            onUpdateTime = {}
         )
     }
 }

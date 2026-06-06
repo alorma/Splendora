@@ -11,27 +11,27 @@ class WizardActivationEngine(private val clock: SplendoraClock) {
     }
 
     /**
-     * Calculates the age of a character relative to the current date from the clock.
+     * Calculates the age of a character relative to a reference date.
+     * Defaults to the clock's current date.
      */
-    fun calculateAge(birthDate: LocalDate, referenceDate: LocalDate = clock.currentDate()): Int {
+    fun calculateAge(birthDate: LocalDate, referenceDate: LocalDate = clock.currentDate.value): Int {
         if (birthDate.isAfter(referenceDate)) return -1
         return Period.between(birthDate, referenceDate).years
     }
 
     /**
-     * Determines if a character is "activated".
-     * Standard: 13 years old or more.
-     * Exception: Logic override (e.g., activates at 10 years old).
+     * Determines if a character is "activated" at a reference date.
+     * Defaults to the clock's current date.
      */
-    fun isActivated(character: Character, referenceDate: LocalDate = clock.currentDate()): Boolean {
+    fun isActivated(character: Character, referenceDate: LocalDate = clock.currentDate.value): Boolean {
         val age = calculateAge(character.birthDate, referenceDate)
         if (age < 0) return false
 
-        return if (character.isException) {
-            // Logic override for the exception character: activates at 10 instead of 13
-            age >= 10
+        val requiredAge = if (character.isException) {
+            character.activationAge
         } else {
-            age >= ACTIVATION_AGE
+            ACTIVATION_AGE
         }
+        return age >= requiredAge
     }
 }

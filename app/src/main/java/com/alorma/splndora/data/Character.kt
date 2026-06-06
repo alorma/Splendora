@@ -9,5 +9,6 @@ data class Character(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val name: String,
     val birthDate: LocalDate,
-    val isException: Boolean = false
+    val isException: Boolean = false,
+    val activationAge: Int = 13
 )

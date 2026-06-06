@@ -10,7 +10,4 @@ sealed interface NavRoute : NavKey {
 
     @Serializable
     data object Formulas : NavRoute
-
-    @Serializable
-    data object Simulator : NavRoute
 }

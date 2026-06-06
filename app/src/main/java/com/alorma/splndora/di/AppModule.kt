@@ -6,12 +6,11 @@ import com.alorma.splndora.clock.SplendoraClock
 import com.alorma.splndora.data.AppDatabase
 import com.alorma.splndora.engine.WizardActivationEngine
 import com.alorma.splndora.ui.edades.EdadesViewModel
-import com.alorma.splndora.ui.simulator.SimulatorViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
-import org.koin.dsl.bind
+import java.time.LocalDate
 
 val appModule = module {
     single {
@@ -24,10 +23,9 @@ val appModule = module {
 
     single { get<AppDatabase>().characterDao() }
 
-    singleOf(::HistoricalClock) bind SplendoraClock::class
+    single<SplendoraClock> { HistoricalClock() }
 
     singleOf(::WizardActivationEngine)
 
     viewModelOf(::EdadesViewModel)
-    viewModelOf(::SimulatorViewModel)
 }
